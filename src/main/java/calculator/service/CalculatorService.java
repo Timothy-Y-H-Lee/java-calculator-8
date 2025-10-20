@@ -4,7 +4,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import calculator.domain.CalculatorModel;
+
 public class CalculatorService {
+	private CalculatorModel calculatorModel;
 	private CalculatorService() {
 	}
 
@@ -51,7 +54,7 @@ public class CalculatorService {
 	}
 
 	// 문자열을 적절한 구분자로 분리한 후 숫자의 합을 계산하는 메소드
-	public static Integer calculateSumOfNumbers(String userInput) {
+	public Integer calculateSumOfNumbers(String userInput) {
 		// \\n을 실제 줄바꿈 문자로 변환
 		userInput = userInput.replace("\\n", "\n");
 
@@ -59,10 +62,11 @@ public class CalculatorService {
 
 		// 기본 구분자 + 커스텀 구분자 모두 포함해서 처리
 		String delimiter = "[,:" + extractCustomDelimiter(userInput) + "]";
-		List<String> numbers = splitByDelimiter(content, delimiter);
+		// Model 단에 사용자의 입력값을 저장
+		calculatorModel = new CalculatorModel(splitByDelimiter(content, delimiter));
 
 		// 숫자로 변환한 후 합계 계산
-		return numbers.stream()
+		return calculatorModel.getUserInputList().stream()
 			.map(Integer::parseInt)  // 문자열을 Integer로 변환
 			.reduce(0, Integer::sum);  // 합계
 	}
