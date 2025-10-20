@@ -79,7 +79,20 @@ public class CalculatorService {
 	public static List<String> splitByDelimiter(String userInput, String delimiter) {
 		return Arrays.stream(userInput.split(delimiter))
 			.map(String::trim)  // 공백 제거
+			.peek(CalculatorService::validateNumber) // 숫자 유효성 검사
 			.collect(Collectors.toList());  // 리스트로 변환
+	}
+
+	// 숫자 유효성 검사: 숫자가 아니거나 음수인 경우 예외 발생
+	public static void validateNumber(String validateNumber) {
+		try {
+			Integer number = Integer.parseInt(validateNumber);
+			if (number < 0) {
+				throw new IllegalArgumentException("양수만 입력 가능합니다." + validateNumber);
+			}
+		} catch (NumberFormatException e) {
+			throw new IllegalArgumentException("숫자가 아닙니다. " + validateNumber);
+		}
 	}
 
 	private static class InnerCalculatorService {
