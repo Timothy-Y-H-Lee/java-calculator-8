@@ -1,5 +1,9 @@
 package calculator.service;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class CalculatorService {
 	private CalculatorService() {
 	}
@@ -32,6 +36,50 @@ public class CalculatorService {
 
 		return (startIndex != -1 && endIndex != -1 && startIndex < endIndex)
 			? userInput.substring(startIndex, endIndex) : "";
+	}
+
+	/**
+	 * 사용자로부터 입력받은 문자열 연산
+	 * @param userInput
+	 * @return Integer
+	 */
+	public Integer calcFromString(String userInput) {
+		if (userInput.isEmpty()) {
+			return 0;
+		}
+		return calculateSumOfNumbers(userInput);
+	}
+
+	// 문자열을 적절한 구분자로 분리한 후 숫자의 합을 계산하는 메소드
+	public static Integer calculateSumOfNumbers(String userInput) {
+		// \\n을 실제 줄바꿈 문자로 변환
+		userInput = userInput.replace("\\n", "\n");
+
+		String content = userInput.substring(userInput.indexOf("\n") + 1); // 구분자 이후의 문자열
+
+		// 기본 구분자 포함 여부 확인
+		List<String> numbers;
+		if (containsDefaultDelimiters(content)) {
+			numbers = splitByDelimiter(content, "[,:]");
+		} else {
+			// 커스텀 구분자를 추출
+			String customDelimiter = extractCustomDelimiter(userInput);
+			numbers = !customDelimiter.isEmpty()
+				? splitByDelimiter(content, customDelimiter)
+				: List.of(); // 빈 리스트 반환
+		}
+
+		// 숫자로 변환한 후 합계 계산
+		return numbers.stream()
+			.map(Integer::parseInt)  // 문자열을 Integer로 변환
+			.reduce(0, Integer::sum);  // 합계
+	}
+
+	// 구분자를 기준으로 문자열을 분리하는 메소드
+	public static List<String> splitByDelimiter(String userInput, String delimiter) {
+		return Arrays.stream(userInput.split(delimiter))
+			.map(String::trim)  // 공백 제거
+			.collect(Collectors.toList());  // 리스트로 변환
 	}
 
 	private static class InnerCalculatorService {
