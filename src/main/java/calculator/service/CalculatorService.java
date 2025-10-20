@@ -57,17 +57,9 @@ public class CalculatorService {
 
 		String content = userInput.substring(userInput.indexOf("\n") + 1); // 구분자 이후의 문자열
 
-		// 기본 구분자 포함 여부 확인
-		List<String> numbers;
-		if (containsDefaultDelimiters(content)) {
-			numbers = splitByDelimiter(content, "[,:]");
-		} else {
-			// 커스텀 구분자를 추출
-			String customDelimiter = extractCustomDelimiter(userInput);
-			numbers = !customDelimiter.isEmpty()
-				? splitByDelimiter(content, customDelimiter)
-				: List.of(); // 빈 리스트 반환
-		}
+		// 기본 구분자 + 커스텀 구분자 모두 포함해서 처리
+		String delimiter = "[,:" + extractCustomDelimiter(userInput) + "]";
+		List<String> numbers = splitByDelimiter(content, delimiter);
 
 		// 숫자로 변환한 후 합계 계산
 		return numbers.stream()
